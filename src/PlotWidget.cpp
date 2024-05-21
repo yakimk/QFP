@@ -16,7 +16,12 @@ QSize PlotWidget::sizeHint() const {
 }
 
 void PlotWidget::setFunctions(const QStringList &functionTexts) {
-    m_functionTexts = functionTexts;
+    m_functionTexts.clear();
+    for (const auto &text : functionTexts) {
+        if (!text.isEmpty()) {
+            m_functionTexts.append(text);
+        }
+    }
     repaint();
 }
 
@@ -73,7 +78,7 @@ void PlotWidget::paintEvent(QPaintEvent *event) {
         double step = 0.1;
         bool firstPoint = true;
         for (double x = m_offsetX - w / 2; x <= m_offsetX + w / 2; x += step * m_scale) {
-            double y = evaluateFunction((x - m_offsetX) / m_scale, functionText) * m_scale + m_offsetY;
+            double y = evaluateFunction((x) / m_scale, functionText) * m_scale;
             if (firstPoint) {
                 path.moveTo(x, -y);
                 firstPoint = false;
@@ -123,10 +128,11 @@ void PlotWidget::adjustScale(int delta) {
 }
 
 double PlotWidget::evaluateFunction(double x, const QString &functionText) {
-    if (functionText.isEmpty()) return std::sin(x);
+    if (functionText.isEmpty()) return 0.0;
     auto it = mathFunctions.find(functionText.toStdString());
     if (it != mathFunctions.end()) {
-        return it->second(x);
+        double result = it->second(x);
+        return result;
     }
     return 0.0;
 }
