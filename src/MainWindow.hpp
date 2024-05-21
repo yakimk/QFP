@@ -21,7 +21,11 @@ private slots:
     void quitApplication();
 
 private:
-    QLineEdit *functionInput;
+    QLineEdit *functionInput1;
+    QLineEdit *functionInput2;
+    QLineEdit *functionInput3;
+    QLineEdit *functionInput4;
+    QLineEdit *functionInput5;
     QPushButton *plotButton;
     QPushButton *quitButton;
     PlotWidget *plotWidget;

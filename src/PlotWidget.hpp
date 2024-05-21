@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QPointF>
+#include <QStringList>
+#include <QVector>
+#include <QColor>
 
 class PlotWidget : public QWidget {
     Q_OBJECT
@@ -10,7 +13,7 @@ class PlotWidget : public QWidget {
 public:
     PlotWidget(QWidget *parent = nullptr);
     QSize sizeHint() const override;
-    void setFunction(const QString &functionText);
+    void setFunctions(const QStringList &functionTexts);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -20,12 +23,13 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
-    QString m_functionText;
+    QStringList m_functionTexts;
+    QVector<QColor> m_functionColors;
     double m_scale;
     double m_offsetX;
     double m_offsetY;
     QPointF m_lastPos;
-    double evaluateFunction(double x);
+    double evaluateFunction(double x, const QString &functionText);
     void adjustScale(int delta);
 };
 
