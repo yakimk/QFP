@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.lean": "lean",
+        "cmath": "cpp"
+    }
+}
