@@ -5,3 +5,7 @@
 - [ ] button to togle area coloring under the function plot
 - [ ] button to aproximate integral and derivate at some point
 - [ ] button to change the domain of the function
+
+
+- [ ] add numbering back again 
+- [ ] make functions to be infinite and domain only for points

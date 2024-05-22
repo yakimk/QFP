@@ -7,7 +7,9 @@
 #include <cmath>
 
 PlotWidget::PlotWidget(QWidget *parent)
-    : QWidget(parent), m_scale(50.0), m_offsetX(0.0), m_offsetY(0.0) {
+    : QWidget(parent), m_scale(50.0), m_offsetX(0.0), m_offsetY(0.0), 
+      m_domainMin(-10.0), m_domainMax(10.0), m_epsilon(0.005), m_step(0.01),
+      showIntersections(false), showZeros(false) {
     m_functionColors = {Qt::red, Qt::blue, Qt::green, Qt::magenta, Qt::cyan};
 }
 
@@ -22,6 +24,32 @@ void PlotWidget::setFunctions(const QStringList &functionTexts) {
             m_functionTexts.append(text);
         }
     }
+    repaint();
+}
+
+void PlotWidget::toggleIntersections() {
+    showIntersections = !showIntersections;
+    repaint();
+}
+
+void PlotWidget::toggleZeros() {
+    showZeros = !showZeros;
+    repaint();
+}
+
+void PlotWidget::setDomain(double min, double max) {
+    m_domainMin = min;
+    m_domainMax = max;
+    repaint();
+}
+
+void PlotWidget::setEpsilon(double epsilon) {
+    m_epsilon = epsilon;
+    repaint();
+}
+
+void PlotWidget::setStep(double step) {
+    m_step = step;
     repaint();
 }
 
@@ -40,33 +68,8 @@ void PlotWidget::paintEvent(QPaintEvent *event) {
 
     // Draw x-axis
     painter.drawLine(m_offsetX - w, 0, m_offsetX + w, 0);
-
     // Draw y-axis
     painter.drawLine(0, m_offsetY - h, 0, m_offsetY + h);
-
-    // Draw ticks and numbers on axes
-    const int tickSpacing = 50;
-    QFont font("Arial", 8);
-    painter.setFont(font);
-    painter.setPen(Qt::black);
-
-    // Draw x-axis ticks and numbers
-    for (int i = m_offsetX / tickSpacing - w / tickSpacing; i <= m_offsetX / tickSpacing + w / tickSpacing; ++i) {
-        int x = i * tickSpacing;
-        painter.drawLine(x, -5, x, 5);
-        if (x != 0) {
-            painter.drawText(x - 10, 15, QString::number(x / m_scale, 'f', 1));
-        }
-    }
-
-    // Draw y-axis ticks and numbers
-    for (int i = m_offsetY / tickSpacing - h / tickSpacing; i <= m_offsetY / tickSpacing + h / tickSpacing; ++i) {
-        int y = i * tickSpacing;
-        painter.drawLine(-5, y, 5, y);
-        if (y != 0) {
-            painter.drawText(10, y + 5, QString::number(-y / m_scale, 'f', 1));
-        }
-    }
 
     // Draw the functions
     for (int i = 0; i < m_functionTexts.size(); ++i) {
@@ -75,18 +78,35 @@ void PlotWidget::paintEvent(QPaintEvent *event) {
         painter.setPen(color);
 
         QPainterPath path;
-        double step = 0.1;
         bool firstPoint = true;
-        for (double x = m_offsetX - w / 2; x <= m_offsetX + w / 2; x += step * m_scale) {
-            double y = evaluateFunction((x) / m_scale, functionText) * m_scale;
+        for (double x = m_domainMin; x <= m_domainMax; x += m_step) {
+            double y = evaluateFunction(x, functionText);
             if (firstPoint) {
-                path.moveTo(x, -y);
+                path.moveTo(x * m_scale, -y * m_scale);
                 firstPoint = false;
             } else {
-                path.lineTo(x, -y);
+                path.lineTo(x * m_scale, -y * m_scale);
             }
         }
         painter.drawPath(path);
+    }
+
+    if (showIntersections) {
+        QVector<QPointF> intersections = findIntersections();
+        painter.setPen(Qt::red);
+        painter.setBrush(Qt::red);
+        for (const auto &point : intersections) {
+            painter.drawEllipse(point, 3, 3);
+        }
+    }
+
+    if (showZeros) {
+        QVector<QPointF> zeros = findZeros();
+        painter.setPen(Qt::blue);
+        painter.setBrush(Qt::blue);
+        for (const auto &point : zeros) {
+            painter.drawEllipse(point, 3, 3);
+        }
     }
 }
 
@@ -135,4 +155,36 @@ double PlotWidget::evaluateFunction(double x, const QString &functionText) {
         return result;
     }
     return 0.0;
+}
+
+QVector<QPointF> PlotWidget::findIntersections() {
+    QVector<QPointF> points;
+    if (m_functionTexts.size() < 2) return points;
+
+    for (int i = 0; i < m_functionTexts.size() - 1; ++i) {
+        for (int j = i + 1; j < m_functionTexts.size(); ++j) {
+            for (double x = m_domainMin; x <= m_domainMax; x += m_step) {
+                double y1 = evaluateFunction(x, m_functionTexts[i]);
+                double y2 = evaluateFunction(x, m_functionTexts[j]);
+                if (std::abs(y1 - y2) < m_epsilon) {
+                    points.append(QPointF(x * m_scale, -y1 * m_scale));
+                }
+            }
+        }
+    }
+    return points;
+}
+
+QVector<QPointF> PlotWidget::findZeros() {
+    QVector<QPointF> points;
+
+    for (const auto &functionText : m_functionTexts) {
+        for (double x = m_domainMin; x <= m_domainMax; x += m_step) {
+            double y = evaluateFunction(x, functionText);
+            if (std::abs(y) < m_epsilon) {
+                points.append(QPointF(x * m_scale, 0));
+            }
+        }
+    }
+    return points;
 }

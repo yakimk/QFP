@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.lean": "lean",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "qapplication": "cpp",
+        "qvboxlayout": "cpp"
     }
 }

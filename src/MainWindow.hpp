@@ -19,6 +19,11 @@ protected:
 private slots:
     void plotFunction();
     void quitApplication();
+    void toggleIntersections();
+    void toggleZeros();
+    void updateDomain();
+    void updateEpsilon();
+    void updateStep();
 
 private:
     QLineEdit *functionInput1;
@@ -26,8 +31,14 @@ private:
     QLineEdit *functionInput3;
     QLineEdit *functionInput4;
     QLineEdit *functionInput5;
+    QLineEdit *domainMinInput;
+    QLineEdit *domainMaxInput;
+    QLineEdit *epsilonInput;
+    QLineEdit *stepInput;
     QPushButton *plotButton;
     QPushButton *quitButton;
+    QPushButton *intersectionsButton;
+    QPushButton *zerosButton;
     PlotWidget *plotWidget;
 };
 
