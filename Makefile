@@ -55,12 +55,14 @@ OBJECTS_DIR   = ./
 SOURCES       = src/main.cpp \
 		src/MainWindow.cpp \
 		src/PlotWidget.cpp \
-		src/Parser.cpp moc_MainWindow.cpp \
+		src/Parser.cpp \
+		src/Tokenizer.cpp moc_MainWindow.cpp \
 		moc_PlotWidget.cpp
 OBJECTS       = main.o \
 		MainWindow.o \
 		PlotWidget.o \
 		Parser.o \
+		Tokenizer.o \
 		moc_MainWindow.o \
 		moc_PlotWidget.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -142,10 +144,12 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		QtFunctionPlotter.pro src/MainWindow.hpp \
 		src/PlotWidget.hpp \
-		src/Parser.hpp src/main.cpp \
+		src/Parser.hpp \
+		src/Tokenizer.hpp src/main.cpp \
 		src/MainWindow.cpp \
 		src/PlotWidget.cpp \
-		src/Parser.cpp
+		src/Parser.cpp \
+		src/Tokenizer.cpp
 QMAKE_TARGET  = QtFunctionPlotter
 DESTDIR       = 
 TARGET        = QtFunctionPlotter
@@ -329,8 +333,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/MainWindow.hpp src/PlotWidget.hpp src/Parser.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/PlotWidget.cpp src/Parser.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/MainWindow.hpp src/PlotWidget.hpp src/Parser.hpp src/Tokenizer.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/PlotWidget.cpp src/Parser.cpp src/Tokenizer.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -392,8 +396,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-main.o: src/main.cpp src/MainWindow.hpp \
-		src/PlotWidget.hpp
+main.o: src/main.cpp src/PlotWidget.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 MainWindow.o: src/MainWindow.cpp src/MainWindow.hpp \
@@ -401,11 +404,16 @@ MainWindow.o: src/MainWindow.cpp src/MainWindow.hpp \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MainWindow.o src/MainWindow.cpp
 
 PlotWidget.o: src/PlotWidget.cpp src/PlotWidget.hpp \
-		src/Parser.hpp
+		src/Parser.hpp \
+		src/Tokenizer.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PlotWidget.o src/PlotWidget.cpp
 
-Parser.o: src/Parser.cpp 
+Parser.o: src/Parser.cpp src/Parser.hpp \
+		src/Tokenizer.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Parser.o src/Parser.cpp
+
+Tokenizer.o: src/Tokenizer.cpp src/Tokenizer.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Tokenizer.o src/Tokenizer.cpp
 
 moc_MainWindow.o: moc_MainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MainWindow.o moc_MainWindow.cpp

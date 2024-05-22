@@ -12,10 +12,12 @@ SOURCES += \
     src/main.cpp \
     src/MainWindow.cpp \
     src/PlotWidget.cpp \
-    src/Parser.cpp
+    src/Parser.cpp \
+    src/Tokenizer.cpp
 
 # Header files
 HEADERS += \
     src/MainWindow.hpp \
     src/PlotWidget.hpp \
-    src/Parser.hpp
+    src/Parser.hpp \
+    src/Tokenizer.hpp

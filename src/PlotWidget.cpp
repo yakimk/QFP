@@ -171,12 +171,12 @@ void PlotWidget::adjustScale(int delta) {
 
 double PlotWidget::evaluateFunction(double x, const QString &functionText) {
     if (functionText.isEmpty()) return 0.0;
-    auto it = mathFunctions.find(functionText.toStdString());
-    if (it != mathFunctions.end()) {
-        double result = it->second(x);
-        return result;
-    }
-    return parseExpression(functionText.toStdString(), x);
+    // auto it = mathFunctions.find(functionText.toStdString());
+    // if (it != mathFunctions.end()) {
+    //     double result = it->second(x);
+    //     return result;
+    // }
+    return parseFunction(functionText.toStdString())(x);
     return 0.0;
 }
 
