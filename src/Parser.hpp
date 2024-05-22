@@ -30,3 +30,5 @@ const std::unordered_map<std::string, MathFunction> mathFunctions = {
     {"round", [](double x) { return std::round(x); }},
     // {"fmod", [](double x, double y) { return std::fmod(x, y); }} 
 };
+
+double parseExpression(const std::string& expr, double x);
