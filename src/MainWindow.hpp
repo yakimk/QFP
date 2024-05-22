@@ -4,6 +4,10 @@
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QFrame>
 #include "PlotWidget.hpp"
 
 class MainWindow : public QMainWindow {
@@ -13,33 +17,27 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-protected:
-    void keyPressEvent(QKeyEvent *event) override;
+private:
+    void createControls();
+    void setupConnections();
 
 private slots:
-    void plotFunction();
-    void quitApplication();
-    void toggleIntersections();
-    void toggleZeros();
-    void updateDomain();
-    void updateEpsilon();
-    void updateStep();
+    void onApplyFunctions();
+    void onShowHelp();
 
 private:
-    QLineEdit *functionInput1;
-    QLineEdit *functionInput2;
-    QLineEdit *functionInput3;
-    QLineEdit *functionInput4;
-    QLineEdit *functionInput5;
-    QLineEdit *domainMinInput;
-    QLineEdit *domainMaxInput;
-    QLineEdit *epsilonInput;
-    QLineEdit *stepInput;
-    QPushButton *plotButton;
-    QPushButton *quitButton;
-    QPushButton *intersectionsButton;
-    QPushButton *zerosButton;
     PlotWidget *plotWidget;
+    QVBoxLayout *controlLayout;
+    QVBoxLayout *settingsLayout;
+    QLineEdit *functionEdits[5];
+    QPushButton *applyFunctionsButton;
+    QPushButton *showHelpButton;
+    QLineEdit *epsilonEdit;
+    QLineEdit *stepEdit;
+    QLineEdit *domainMinEdit;
+    QLineEdit *domainMaxEdit;
+    QPushButton *toggleZerosButton;
+    QPushButton *toggleIntersectionsButton;
 };
 
 #endif // MAINWINDOW_HPP
