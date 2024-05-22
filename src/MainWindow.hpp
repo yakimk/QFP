@@ -40,4 +40,4 @@ private:
     QPushButton *toggleIntersectionsButton;
 };
 
-#endif // MAINWINDOW_HPP
+#endif

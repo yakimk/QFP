@@ -8,9 +8,9 @@
 
 PlotWidget::PlotWidget(QWidget *parent)
     : QWidget(parent), m_scale(50.0), m_offsetX(0.0), m_offsetY(0.0), 
-      m_domainMin(-10.0), m_domainMax(10.0), m_step(0.01), m_epsilon(0.005), 
+      m_domainMin(-10.0), m_domainMax(10.0), m_epsilon(0.005), m_step(0.01), 
       showIntersections(false), showZeros(false) {
-    m_functionColors = {Qt::red, Qt::blue, Qt::green, Qt::magenta, Qt::cyan};
+    m_functionColors = {Qt::red, Qt::blue, Qt::darkYellow, Qt::magenta, Qt::cyan};
 }
 
 QSize PlotWidget::sizeHint() const {
@@ -19,9 +19,19 @@ QSize PlotWidget::sizeHint() const {
 
 void PlotWidget::setFunctions(const QStringList &functionTexts) {
     m_functionTexts.clear();
+    m_functions.clear();
     for (const auto &text : functionTexts) {
         if (!text.isEmpty()) {
+            std::function<double(double)> func;
+            try { 
+                func = parseFunction(text.toStdString());
+            }
+            catch (std::invalid_argument&) { // in this implementation std::invalid_argument is a sort of parser exception
+                continue;
+            }
+
             m_functionTexts.append(text);
+            m_functions.append(func);
         }
     }
     repaint();
@@ -50,7 +60,8 @@ void PlotWidget::setDomain(double min, double max) {
     m_domainMax = max;
 }
 
-void PlotWidget::paintEvent(QPaintEvent *event) {
+void PlotWidget::paintEvent(__attribute__((unused))QPaintEvent *event) {
+    
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
@@ -59,16 +70,14 @@ void PlotWidget::paintEvent(QPaintEvent *event) {
 
     painter.setWindow(-w / 2 + m_offsetX, -h / 2 + m_offsetY, w, h);
 
-    // Draw infinite axes
     QPen axisPen(Qt::black, 1, Qt::DashLine);
     painter.setPen(axisPen);
 
-    // Draw x-axis
     painter.drawLine(m_offsetX - w, 0, m_offsetX + w, 0);
 
-    // Draw y-axis
     painter.drawLine(0, m_offsetY - h, 0, m_offsetY + h);
-    // Draw ticks and numbers on axes
+    
+
     const int tickSpacing = 50;
     QFont font("Arial", 8);
     painter.setFont(font);
@@ -92,8 +101,8 @@ void PlotWidget::paintEvent(QPaintEvent *event) {
         }
     }
 
-    for (int i = 0; i < m_functionTexts.size(); ++i) {
-        const QString &functionText = m_functionTexts[i];
+    for (int i = 0; i < m_functions.size(); ++i) {
+        auto &func = m_functions[i];
         QColor color = m_functionColors[i % m_functionColors.size()];
         painter.setPen(color);
 
@@ -101,7 +110,7 @@ void PlotWidget::paintEvent(QPaintEvent *event) {
         double step = 0.1;
         bool firstPoint = true;
         for (double x = m_offsetX - w / 2; x <= m_offsetX + w / 2; x += step * m_scale) {
-            double y = evaluateFunction((x) / m_scale, functionText) * m_scale;
+            double y = func((x) / m_scale) * m_scale;
             if (firstPoint) {
                 path.moveTo(x, -y);
                 firstPoint = false;
@@ -143,6 +152,10 @@ void PlotWidget::mousePressEvent(QMouseEvent *event) {
     }
 }
 
+void PlotWidget::mouseReleaseEvent(__attribute__((unused))QMouseEvent *event) {
+
+}
+
 void PlotWidget::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton) {
         int dx = event->x() - m_lastPos.x();
@@ -151,12 +164,6 @@ void PlotWidget::mouseMoveEvent(QMouseEvent *event) {
         m_offsetY -= dy;
         m_lastPos = event->pos();
         repaint();
-    }
-}
-
-void PlotWidget::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        // Do nothing for now
     }
 }
 
@@ -169,26 +176,15 @@ void PlotWidget::adjustScale(int delta) {
     }
 }
 
-double PlotWidget::evaluateFunction(double x, const QString &functionText) {
-    if (functionText.isEmpty()) return 0.0;
-    // auto it = mathFunctions.find(functionText.toStdString());
-    // if (it != mathFunctions.end()) {
-    //     double result = it->second(x);
-    //     return result;
-    // }
-    return parseFunction(functionText.toStdString())(x);
-    return 0.0;
-}
-
 QVector<QPointF> PlotWidget::findIntersections() {
     QVector<QPointF> points;
     if (m_functionTexts.size() < 2) return points;
 
-    for (int i = 0; i < m_functionTexts.size() - 1; ++i) {
-        for (int j = i + 1; j < m_functionTexts.size(); ++j) {
+    for (int i = 0; i < m_functions.size() - 1; ++i) {
+        for (int j = i + 1; j < m_functions.size(); ++j) {
             for (double x = m_domainMin; x <= m_domainMax; x += m_step) {
-                double y1 = evaluateFunction(x, m_functionTexts[i]);
-                double y2 = evaluateFunction(x, m_functionTexts[j]);
+                double y1 = m_functions[i](x);
+                double y2 = m_functions[j](x);
                 if (std::abs(y1 - y2) < m_epsilon) {
                     points.append(QPointF(x * m_scale, -y1 * m_scale));
                 }
@@ -200,9 +196,9 @@ QVector<QPointF> PlotWidget::findIntersections() {
 
 QVector<QPointF> PlotWidget::findZeros() {
     QVector<QPointF> points;
-    for (const auto &functionText : m_functionTexts) {
+    for (const auto &func : m_functions) {
         for (double x = m_domainMin; x <= m_domainMax; x += m_step) {
-            double y = evaluateFunction(x, functionText);
+            double y = func(x);
             if (std::abs(y) < m_epsilon) {
                 points.append(QPointF(x * m_scale, 0));
             }

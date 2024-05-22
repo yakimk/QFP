@@ -40,6 +40,14 @@ public:
     double evaluate(double x) const override;
 };
 
+class UnaryFuncNode : public ASTNode {
+    std::shared_ptr<ASTNode> arg;
+    std::function<double(double)> func;
+public:
+    UnaryFuncNode(std::shared_ptr<ASTNode> arg, std::function<double(double)> func);
+    double evaluate(double x) const override;
+};
+
 class Parser {
     std::vector<Token> tokens;
     size_t pos;
@@ -56,4 +64,4 @@ public:
 
 std::function<double(double)> parseFunction(const std::string &expression);
 
-#endif // PARSER_HPP
+#endif

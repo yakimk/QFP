@@ -396,7 +396,8 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-main.o: src/main.cpp src/PlotWidget.hpp
+main.o: src/main.cpp src/MainWindow.hpp \
+		src/PlotWidget.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 MainWindow.o: src/MainWindow.cpp src/MainWindow.hpp \

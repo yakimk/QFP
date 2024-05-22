@@ -127,7 +127,6 @@ void MainWindow::setupConnections() {
     connect(toggleZerosButton, &QPushButton::clicked, plotWidget, &PlotWidget::toggleZeros);
     connect(toggleIntersectionsButton, &QPushButton::clicked, plotWidget, &PlotWidget::toggleIntersections);
 
-    // Connect Enter key to apply functions
     for (int i = 0; i < 5; ++i) {
         connect(functionEdits[i], &QLineEdit::returnPressed, this, &MainWindow::onApplyFunctions);
     }

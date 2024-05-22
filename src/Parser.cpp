@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "Tokenizer.hpp"
 #include <stdexcept>
 #include <cmath>
 
@@ -32,6 +33,12 @@ PowerNode::PowerNode(std::shared_ptr<ASTNode> base, std::shared_ptr<ASTNode> exp
 
 double PowerNode::evaluate(double x) const {
     return std::pow(base->evaluate(x), exponent->evaluate(x));
+}
+
+UnaryFuncNode::UnaryFuncNode(std::shared_ptr<ASTNode> arg, std::function<double(double)> func) : arg(std::move(arg)), func(func){}
+
+double UnaryFuncNode::evaluate(double x) const {
+    return this->func(this->arg->evaluate(x)); 
 }
 
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), pos(0) {}

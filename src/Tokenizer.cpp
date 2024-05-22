@@ -25,16 +25,21 @@ std::vector<Token> tokenize(const std::string &expression) {
             while (i < expression.length() && std::isalpha(expression[i])) {
                 ++i;
             }
-            tokens.push_back({TokenType::Variable, expression.substr(start, i - start)});
+
+            const std::string readAlhaVal = expression.substr(start, i - start);
+            tokens.push_back({TokenType::Variable, readAlhaVal});
+
+        } else if (current == '*' && i + 1 < expression.length() && expression[i + 1] == '*') {
+            tokens.push_back({TokenType::Power, "**"});
+            i += 2;
+
         } else if (current == '+' || current == '-' || current == '*' || current == '/' || current == '(' || current == ')') {
             TokenType type = TokenType::Operator;
             if (current == '(') type = TokenType::LeftParen;
             else if (current == ')') type = TokenType::RightParen;
             tokens.push_back({type, std::string(1, current)});
             ++i;
-        } else if (current == '*' && i + 1 < expression.length() && expression[i + 1] == '*') {
-            tokens.push_back({TokenType::Power, "**"});
-            i += 2;
+
         } else {
             throw std::invalid_argument("Invalid character in expression");
         }
