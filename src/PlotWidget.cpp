@@ -10,7 +10,7 @@ PlotWidget::PlotWidget(QWidget *parent)
     : QWidget(parent), m_scale(50.0), m_offsetX(0.0), m_offsetY(0.0), 
       m_domainMin(-10.0), m_domainMax(10.0), m_epsilon(0.005), m_step(0.01), 
       showIntersections(false), showZeros(false) {
-    m_functionColors = {Qt::red, Qt::blue, Qt::darkYellow, Qt::magenta, Qt::cyan};
+    m_functionColors = {Qt::red, Qt::blue, Qt::darkYellow, Qt::magenta, Qt::darkGray};
 }
 
 QSize PlotWidget::sizeHint() const {

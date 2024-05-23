@@ -36,7 +36,8 @@ enum class TokenType {
     Operator,
     LeftParen,
     RightParen,
-    Power
+    Power,
+    UnaryFunc
 };
 
 struct Token {

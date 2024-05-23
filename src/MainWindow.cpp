@@ -150,9 +150,11 @@ void MainWindow::onApplyFunctions() {
 }
 
 void MainWindow::onShowHelp() {
-    QMessageBox::information(this, "Help", "This is a simple function plotter.\n\n"
-                                           "Enter functions in the text fields.\n"
-                                           "Set the epsilon and step values to control precision.\n"
-                                           "Set the domain range to control the displayed range.\n"
-                                           "Click 'Apply Functions' or press Enter to update the plot.");
+    QMessageBox::information(this, "Help", "QFP - Qt Function Plotter"
+                                           "QFP is a simple function plotter.\n"
+                                           "To start enter a function in the text fields on the left.\n"
+                                           "You could start with something simple. Try `2 + 3 * x`.\n"
+                                           "Click 'Apply Functions' or press Enter to update the plot.\n"
+                                           "You could also use some special math functions.\n"
+                                           "For deltails check README.\n");
 }

@@ -2,6 +2,7 @@
 #include "Tokenizer.hpp"
 #include <stdexcept>
 #include <cmath>
+#include <iostream>
 
 NumberNode::NumberNode(double value) : value(value) {}
 
@@ -35,7 +36,8 @@ double PowerNode::evaluate(double x) const {
     return std::pow(base->evaluate(x), exponent->evaluate(x));
 }
 
-UnaryFuncNode::UnaryFuncNode(std::shared_ptr<ASTNode> arg, std::function<double(double)> func) : arg(std::move(arg)), func(func){}
+UnaryFuncNode::UnaryFuncNode(std::shared_ptr<ASTNode> arg, std::function<double(double)> func) 
+    : arg(std::move(arg)), func(std::move(func)){}
 
 double UnaryFuncNode::evaluate(double x) const {
     return this->func(this->arg->evaluate(x)); 
@@ -86,6 +88,31 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
         double value = std::stod(tokens[pos].value);
         ++pos;
         return std::make_shared<NumberNode>(value);
+    }
+
+    if (tokens[pos].type == TokenType::UnaryFunc){
+        std::unordered_map<std::string,MathFunction>::const_iterator got = mathFunctions.find(tokens[pos].value);
+
+        if ( got == mathFunctions.end() )
+            std::invalid_argument("Provided unary function not found");
+        
+        MathFunction func = got->second;
+
+        ++pos;
+        std::shared_ptr<ASTNode> argNode;
+        if (tokens[pos].type == TokenType::LeftParen) {
+            ++pos;
+            argNode = parseExpression();
+            if (pos >= tokens.size() || tokens[pos].type != TokenType::RightParen) {
+                throw std::invalid_argument("Missing closing parenthesis");
+            }
+            ++pos;
+        }else{
+            std::invalid_argument("Opening parenthesis must follow the unary function");
+        }
+
+        return std::make_shared<UnaryFuncNode>(argNode, func);
+
     }
 
     if (tokens[pos].type == TokenType::Variable) {

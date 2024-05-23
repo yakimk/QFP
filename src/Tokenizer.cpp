@@ -26,8 +26,13 @@ std::vector<Token> tokenize(const std::string &expression) {
                 ++i;
             }
 
-            const std::string readAlhaVal = expression.substr(start, i - start);
-            tokens.push_back({TokenType::Variable, readAlhaVal});
+            const std::string readAlphaVal = expression.substr(start, i - start);
+            if (mathFunctions.find(readAlphaVal) != mathFunctions.end()){
+                tokens.push_back({TokenType::UnaryFunc, readAlphaVal});
+            }
+            else{
+                tokens.push_back({TokenType::Variable, readAlphaVal});
+                }
 
         } else if (current == '*' && i + 1 < expression.length() && expression[i + 1] == '*') {
             tokens.push_back({TokenType::Power, "**"});
