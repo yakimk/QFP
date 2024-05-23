@@ -19,7 +19,7 @@ qmake; make
 Then you'l be able to start it with the `QtFunctionPlotter` executable in the `QFP` directory.
 
 
-## Use
+## Using
 Upon opening QFP, enter a function in one of the coresponding textfields on the left side of the screen. Then press "ENTER" on your keyboard or a button "Apply Functions" underneath the textfields. There is a maximum of 5 functions that could be plotted at the same time.
 
 You can plot polynomial functions and their quotients (rational functions):
@@ -54,6 +54,12 @@ Also some other special mathematical functions could be used
 Examples
 - `log10(x ** 2)` would equal $\log_{10}(x^2)$
 - `fabs(x - 2)/sqrt(tanh(x))` would equal $\frac{|x-2|}{\sqrt{\tanh(x)}}$
+
+#### Zeroes and intersections
+You could toggle display of zeroes of the plotted functions or their intersections with the coresponding button on the left side of the screen.
+Both zeroes and intersections are being calculated with a naive algorithm that checks if the difference of values is less than `epsilon` for every point in the defined domain and each step.
+
+To change domain or redefine the settings (`epsilon` or `step` parameters) of this calculation, enter a chosen value in a coresponding textfield and then replot the functions, either by pressing "Apply Functions" or by pressing "ENTER" on your keyboard. 
 
 ### Possible todos
 - [ ] area coloring under a function plot
