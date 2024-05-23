@@ -2,7 +2,7 @@
 
 QFP is a simple graphical application used for function plotting. It could be used to plot different functions, mark zeroes of functions and their intersections. 
 
-![Application preview](https://github.com/yakimk/QFP/img/preview.png?raw=true)
+![Application preview](https://github.com/yakimk/QFP/tree/main/img/preview.png?raw=true)
 
 ## Requirments
 - [Qt5](https://github.com/qt/qt5)
